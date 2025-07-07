@@ -12,6 +12,15 @@ from dataclasses import dataclass
 import base64
 from bs4 import BeautifulSoup
 import urllib.parse
+from enum import Enum
+
+class StateProduct(Enum):
+    """État du produit pour l'analyse"""
+    RECONDITIONNE = "reconditionné"
+    NEUF = "neuf"
+    OCCASION = "occasion"
+    NULL = "inconnu"
+
 
 @dataclass
 class ProductInfo:
@@ -21,6 +30,8 @@ class ProductInfo:
     brand: str = ""
     category: str = ""
     additional_keywords: Optional[List[str]] = None
+    state = StateProduct.NULL
+
 
 @dataclass
 class PriceResult:
@@ -225,10 +236,10 @@ class ProductPriceAnalyzer:
 
 def main() -> None:
     """Fonction principale d'exemple"""
-    analyzer: ProductPriceAnalyzer = ProductPriceAnalyzer()
+    analyzer = ProductPriceAnalyzer()
     
     # Exemple d'utilisation
-    product: ProductInfo = ProductInfo(
+    product = ProductInfo(
         name="iPhone 13",
         image_url="https://th.bing.com/th/id/OPEC.2wPMU3bm7vFoNA474C474?w=128&h=188&o=6&bw=6&bc=ffffff&pid=21.1g",
         color="noir",
