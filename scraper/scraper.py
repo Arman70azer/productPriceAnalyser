@@ -74,46 +74,27 @@ class GoogleShopping:
             return False
     
     def _extract_products(self) -> None:
-        """Extraction rapide des produits"""
-        
+        """Extraction des produits des deux types"""
         if not self.driver:
-            print("❌ Driver non disponible pour l'extraction")
             return
         
-        # Sélecteurs de produits optimisés
-        product_selectors = [
-            "div.UC8ZCe.QS8Cxb",
-            "div[data-ved]",
-            "div.sh-dgr__content",
-            "div.u30d4"
-        ]
+        try:
+            # Récupération des deux types d'éléments
+            type1_elements = self.driver.find_elements(By.CSS_SELECTOR, "div.rwVHAc.itPOE")
+            type2_elements = self.driver.find_elements(By.CSS_SELECTOR, "div.njFjte[jsname='ZvZkAe']")
+            
+            all_elements = type1_elements + type2_elements
+            print(f"📦 Trouvé {len(type1_elements)} type1 + {len(type2_elements)} type2 = {len(all_elements)} produits")
+            
+            # Extraction de chaque produit
+            for element in all_elements:
+                product_info = ProductExtractor.extract_product_info(element)
+                if product_info and product_info.get('title') != "N/A":
+                    self.results.append(product_info)
         
-        print("🔍 Extraction rapide des produits...")
-        
-        for selector in product_selectors:
-            try:
-                # Attente minimale pour les éléments
-                elements = WebDriverWait(self.driver, 5).until(
-                    EC.presence_of_all_elements_located((By.CSS_SELECTOR, selector))
-                )
-                
-                print(f"✅ {len(elements)} éléments trouvés avec {selector}")
-                
-                for element in elements:
-                   
-                    product_info = ProductExtractor.extract_product_info(element)
-                    
-                    if product_info and product_info.get('title') and 'iPhone' in product_info.get('title', '').lower():
-                        self.results.append(product_info)
-                        print(f"Produit trouvé: {product_info.get('title', 'N/A')}")
-                
-                # Si on a trouvé des produits, on arrête
-                if self.results:
-                    break
-                    
-            except Exception as e:
-                print(f"❌ Erreur avec {selector}: {e}")
-                continue
+        except Exception as e:
+            print(f"❌ Erreur extraction: {e}")
+            self._save_debug_info()
     
     def _display_results(self) -> None:
         """Affichage des résultats"""
