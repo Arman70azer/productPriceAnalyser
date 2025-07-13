@@ -3,13 +3,14 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from typing import Optional, List, Dict
-from scraper.driver import DriverManager
-from scraper.extractor import ProductExtractor
-from scraper.cookie import CookieManager
-from scraper.humanBehavior import HumanBehavior
+from lib.driver import DriverManager
+from lib.extractor import ProductExtractor
+from lib.cookie import CookieManager
+from lib.humanBehavior import HumanBehavior
 
 class GoogleShopping:
     """Scraper principal optimisé pour la vitesse"""
+
     
     def __init__(self):
         self.driver: Optional[webdriver.Edge] = None

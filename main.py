@@ -1,6 +1,6 @@
 import time
 import requests
-from scraper.scraper import GoogleShopping
+from googleShop import GoogleShopping
 
 
 class Utils:
