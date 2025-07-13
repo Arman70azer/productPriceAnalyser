@@ -1,29 +1,13 @@
 import time
-import requests
 from googleShop import GoogleShopping
 
-
-class Utils:
-    """Utilitaires divers"""
-    
-    @staticmethod
-    def check_ip() -> None:
-        """Vérifier l'IP actuelle"""
-        try:
-            response = requests.get("https://httpbin.org/ip", timeout=5)
-            print(f"IP actuelle: {response.json()['origin']}")
-        except:
-            print("Impossible de vérifier l'IP")
-
-
+# Exemple d'utilisation optimisé
 def main():
-    """Fonction principale optimisée"""
+    """Point d'entrée principal pour le scraping rapide de Google Shopping"""
     print("🚀 Démarrage du scraping rapide...")
     start_time = time.time()
     
-    Utils.check_ip()
-    
-    scraper = GoogleShopping()
+    scraper = GoogleShopping("edge")
     results = scraper.scrape_product("Apple+iPhone+13+noir+128GB")
     
     end_time = time.time()

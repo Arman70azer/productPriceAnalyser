@@ -1,8 +1,9 @@
-from selenium import webdriver
+from selenium.webdriver.remote.webdriver import WebDriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
-from typing import Optional, List, Dict
+from selenium.webdriver.remote.webdriver import WebDriver
+from typing import Optional, List, Dict, Union
 from lib.driver import DriverManager
 from lib.extractor import ProductExtractor
 from lib.cookie import CookieManager
@@ -12,22 +13,28 @@ class GoogleShopping:
     """Scraper principal optimisé pour la vitesse"""
 
     
-    def __init__(self):
-        self.driver: Optional[webdriver.Edge] = None
+    def __init__(self, browser: str = "edge"):
+        """Initialisation du scraper avec le navigateur choisi"""
+        self.browser = browser.lower()
+        if self.browser not in ["edge", "chrome", "firefox"]:
+            raise ValueError("Navigateur non supporté. Utilisez 'edge', 'chrome' ou 'firefox'.")
+        
+        # Le driver sera initialisé lors de l'appel à scrape_product
+        self.driver: Optional[WebDriver] = None
         self.results: List[Dict] = []
     
     def scrape_product(self, query: str) -> List[Dict]:
         """Scrape les produits identiques avec vitesse optimisée"""
         
         try:
-            # Création du driver avec vérification
-            self.driver = DriverManager.create_stealth_driver()
+            # Création du driver avec le navigateur spécifié
+            self.driver = DriverManager.create_stealth_driver(browser=self.browser)
             
             if not self.driver:
-                print("❌ Impossible de créer le driver")
+                print(f"❌ Impossible de créer le driver {self.browser}")
                 return []
             
-            print("✅ Driver créé avec succès")
+            print(f"✅ Driver {self.browser} créé avec succès")
             
             # Navigation rapide vers Google Shopping
             url = f"https://www.google.com/search?q={query}&hl=fr&gl=fr&udm=28"
@@ -99,14 +106,14 @@ class GoogleShopping:
     
     def _display_results(self) -> None:
         """Affichage des résultats"""
-        print(f"\n📊 RÉSUMÉ: {len(self.results)} iPhones trouvés")
+        print(f"\n📊 RÉSUMÉ: {len(self.results)} produits trouvés")
         print("="*60)
         
         if self.results:
-            for i, phone in enumerate(self.results, 1):
-                print(f"{i}. {phone.get('title', 'N/A')} - {phone.get('price', 'N/A')} ({phone.get('seller', 'N/A')})")
+            for i, product in enumerate(self.results, 1):
+                print(f"{i}. {product.get('title', 'N/A')} - {product.get('price', 'N/A')} ({product.get('seller', 'N/A')})")
         else:
-            print("❌ Aucun iPhone trouvé")
+            print("❌ Aucun produit trouvé")
     
     def _save_debug_info(self) -> None:
         """Sauvegarde des informations de debug"""
@@ -121,3 +128,15 @@ class GoogleShopping:
             print("🔧 Informations de debug sauvegardées")
         except Exception as e:
             print(f"🔧 Erreur lors de la sauvegarde debug: {e}")
+    
+    def change_browser(self, browser: str) -> None:
+        """Change le navigateur pour les futurs scraping"""
+        if browser.lower() not in ["edge", "chrome", "firefox"]:
+            raise ValueError("Navigateur non supporté. Utilisez 'edge', 'chrome' ou 'firefox'.")
+        
+        self.browser = browser.lower()
+        print(f"🔄 Navigateur changé vers: {self.browser}")
+    
+    def get_current_browser(self) -> str:
+        """Retourne le navigateur actuellement configuré"""
+        return self.browser
